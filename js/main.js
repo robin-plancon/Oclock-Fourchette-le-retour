@@ -1,38 +1,51 @@
-// Le nombre max
-const MAX_NUMBER = 500; 
+const max_number = 500;
+// let guesses = [];
 
-// Le nombre cherché
-const searchedNumber = Math.round(Math.random() * MAX_NUMBER);
+const game = {
+    number_to_guess: 0,
+    guesses: 0,
+    scores: [],
+};
 
-// Le nombre saisi
-let enteredNumber = parseInt(prompt('Quel est le nombre à trouver ?'));
+const generate_number = (max, min = 0) => {
+    return Math.round(Math.random() * (max - min) + min);
+};
 
-// Le nombre d'essais
-let attempts = 1;
-
-// Tant que le nombre saisi n'est pas bon on redemande un nombre
-while (enteredNumber !== searchedNumber) {
-    // on vérifie que l'utilisateur a répondu, sinon on sort de la boucle
-    if(!enteredNumber){
-        break;
+const guess = (my_guess) => {
+    game.guesses += 1;
+    if (my_guess === game.number_to_guess) {
+        console.log(
+            `Bravo vous avez trouvé le nombre en ${game.guesses} coups.`
+        );
+        game.scores.push(game.guesses);
+        display_scores();
+        return start_game();
+    } else if (my_guess < game.number_to_guess) {
+        console.log(`C'est plus. Vous en etes au ${game.guesses}eme coups.`);
+        return guess(parseInt(prompt("Veuillez entrer votre reponse ?")));
+    } else if (my_guess > game.number_to_guess) {
+        console.log(`C'est moins. Vous en etes au ${game.guesses}eme coups.`);
+        return guess(parseInt(prompt("Veuillez entrer votre reponse ?")));
+    } else if (my_guess === "exit") {
+        return;
+    } else if (my_guess === "replay") {
+        return start_game();
+    } else {
+        return;
     }
-    // on précise si le nombre recherché est inférieur ou supérieur au nombre saisi
-    if (enteredNumber < searchedNumber) {
-        enteredNumber = parseInt(prompt('C\'est plus'));
-    }
-    else {
-        enteredNumber = parseInt(prompt('C\'est moins'));
-    }
-    // on incrémente le nombre d'essais
-    attempts += 1;
+};
+
+const start_game = () => {
+    game.number_to_guess = generate_number(max_number);
+    console.log(game.number_to_guess);
+    // guesses = [];
+    game.guesses = 0;
+    console.log("Nouvelle partie:");
+    guess(parseInt(prompt("Veuillez entrer votre reponse ?")));
+};
+
+const display_scores = () => {
+    game.scores.map( (score, index) => {console.log(`Partie ${index+1}: ${score} essais.`)})
 }
 
-// on est sorti de la boucle, c'est soit que le nombre saisi est bien le nombre cherché
-// soit que le joueur n'a pas répondu et que enteredNumber est 'falsy'
-if(enteredNumber){
-    // on affiche un message de victoire
-    alert('Bravo ! C\'était bien ' + searchedNumber + ' - Nombre d\'essais : ' + attempts);
-} else {
-    // on affiche un message d'abandon
-    alert('Vous abandonnez ? Dommage...');
-}
+start_game();
